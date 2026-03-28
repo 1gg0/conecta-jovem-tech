@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Conecta Jovem Tech - plataforma acadêmica para divulgação de oficinas introdutórias de programação e inclusão digital." />
+  <title>Conecta Jovem Tech</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="assets/img/logo-icon.svg" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header" id="topo">
+    <div class="container header-content">
+      <a href="#topo" class="brand" aria-label="Conecta Jovem Tech">
+        <img src="assets/img/logo.svg" alt="Logo Conecta Jovem Tech" class="brand-logo" />
+      </a>
+
+      <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu-principal">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="main-nav" id="menu-principal">
+        <a href="#inicio">Início</a>
+        <a href="#sobre">Sobre</a>
+        <a href="#beneficios">Diferenciais</a>
+        <a href="#oficinas">Oficinas</a>
+        <a href="#cronograma">Cronograma</a>
+        <a href="#inscricao">Inscrição</a>
+        <a href="#contato">Contato</a>
+      </nav>
+
+      <a href="#inscricao" class="button button-primary header-cta">Inscreva-se</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero section" id="inicio">
+      <div class="container hero-grid">
+        <div class="hero-text">
+          <span class="eyebrow">Inclusão digital para a comunidade</span>
+          <h1>Oficinas introdutórias de tecnologia para jovens de São José/SC</h1>
+          <p>
+            O Conecta Jovem Tech reúne trilhas de programação, cronograma, inscrição e contato em um
+            ambiente acessível, organizado e funcional para a Etapa 1 do MVP acadêmico.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#inscricao" class="button button-primary">Quero participar</a>
+            <a href="#oficinas" class="button button-secondary">Ver oficinas</a>
+          </div>
+
+          <div class="hero-stats" aria-label="Indicadores do projeto">
+            <article>
+              <strong id="heroWorkshopsCount">16</strong>
+              <span>oficinas planejadas</span>
+            </article>
+            <article>
+              <strong id="heroVacanciesCount">160</strong>
+              <span>vagas projetadas</span>
+            </article>
+            <article>
+              <strong>1</strong>
+              <span>MVP funcional</span>
+            </article>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-badge badge-top">MVP acadêmico funcional</div>
+          <img src="assets/img/hero-illustration.svg" alt="Painel visual da plataforma Conecta Jovem Tech" />
+          <div class="hero-badge badge-bottom">HTML + CSS + JavaScript</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="sobre">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Sobre o projeto</span>
+            <h2>Uma proposta simples, social e viável</h2>
+          </div>
+          <div class="collapse-actions">
+            <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+            <button type="button" class="collapse-toggle" data-target="sobreContent" aria-expanded="true">− Minimizar</button>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="sobreContent">
+          <div class="two-column-card">
+            <div>
+              <p>
+                O projeto foi idealizado para enfrentar a dificuldade de muitos jovens em encontrar
+                oportunidades introdutórias e organizadas de contato com programação e cultura digital.
+              </p>
+              <p>
+                Nesta primeira versão, o site apresenta trilhas, cronograma, formulário de inscrição e
+                canais de contato, funcionando como um <strong>Mínimo Produto Viável (MVP)</strong>.
+              </p>
+
+              <ul class="check-list">
+                <li>Informação centralizada em um único lugar</li>
+                <li>Linguagem acessível para iniciantes</li>
+                <li>Fluxo rápido de inscrição</li>
+                <li>Estrutura compatível com evolução futura</li>
+              </ul>
+            </div>
+
+            <div class="card-illustration">
+              <img src="assets/img/about-illustration.svg" alt="Painel ilustrativo do projeto" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section muted-section" id="beneficios">
+      <div class="container">
+        <div class="section-heading with-toggle center-mobile">
+          <div>
+            <span class="section-tag">Diferenciais</span>
+            <h2>O que o projeto entrega para a comunidade</h2>
+          </div>
+          <div class="collapse-actions">
+            <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+            <button type="button" class="collapse-toggle" data-target="beneficiosContent" aria-expanded="true">− Minimizar</button>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="beneficiosContent">
+          <div class="benefits-grid">
+            <article class="info-card">
+              <div class="icon icon-gradient">💡</div>
+              <h3>Inclusão digital</h3>
+              <p>Amplia o acesso de jovens a experiências introdutórias no universo da tecnologia.</p>
+            </article>
+
+            <article class="info-card">
+              <div class="icon icon-gradient">🧭</div>
+              <h3>Aprendizado orientado</h3>
+              <p>Organiza oficinas, cronogramas e inscrições com clareza, reduzindo barreiras de entrada.</p>
+            </article>
+
+            <article class="info-card">
+              <div class="icon icon-gradient">🚀</div>
+              <h3>Oportunidade de futuro</h3>
+              <p>Estimula o interesse por formação técnica e desenvolvimento de novas competências.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="oficinas">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Oficinas</span>
+            <h2>Trilhas introdutórias planejadas para o MVP</h2>
+          </div>
+          <div class="section-side">
+            <p class="section-intro">
+              Conteúdos pensados para iniciantes, com foco em compreensão prática, linguagem simples e
+              primeiros passos em programação.
+            </p>
+            <div class="collapse-actions">
+              <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+              <button type="button" class="collapse-toggle" data-target="oficinasContent" aria-expanded="true">− Minimizar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="oficinasContent">
+          <div class="workshops-grid" id="workshopsGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section muted-section" id="cronograma">
+      <div class="container schedule-card">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Cronograma</span>
+            <h2>Agenda demonstrativa das oficinas</h2>
+          </div>
+          <div class="section-side">
+            <p class="section-intro">Cronograma do MVP com horários, filtros por categoria e chamada direta para inscrição.</p>
+            <div class="collapse-actions align-end">
+              <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+              <button type="button" class="collapse-toggle" data-target="cronogramaContent" aria-expanded="true">− Minimizar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="cronogramaContent">
+          <div class="tabs-row" id="scheduleTabs"></div>
+
+          <div class="schedule-summary" id="scheduleSummary">
+            <article class="summary-chip">
+              <span class="summary-label">Trilha ativa</span>
+              <strong id="summaryCategory">Programação</strong>
+              <small id="summaryCount">4 oficinas planejadas para esta categoria.</small>
+            </article>
+            <article class="summary-chip">
+              <span class="summary-label">Próxima turma</span>
+              <strong id="summaryNextDate">15 de Junho</strong>
+              <small id="summaryNextTime">14:00 - 16:00 • Laboratório Maker</small>
+            </article>
+            <article class="summary-chip">
+              <span class="summary-label">Carga da trilha</span>
+              <strong id="summaryWorkload">12 horas</strong>
+              <small id="summaryVacancies">40 vagas distribuídas nas oficinas.</small>
+            </article>
+          </div>
+
+          <div class="schedule-list" id="scheduleList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="inscricao">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Inscrição</span>
+            <h2>Preencha o formulário para participar</h2>
+          </div>
+          <div class="collapse-actions">
+            <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+            <button type="button" class="collapse-toggle" data-target="inscricaoContent" aria-expanded="true">− Minimizar</button>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="inscricaoContent">
+          <div class="registration-layout">
+            <div class="registration-copy">
+              <p>
+                O formulário abaixo está funcional e salva os dados localmente no navegador, simulando o
+                registro inicial do interesse do participante no MVP.
+              </p>
+
+              <div class="mini-panel">
+                <h3>O que acontece ao enviar?</h3>
+                <ul class="check-list compact">
+                  <li>Validação dos campos obrigatórios</li>
+                  <li>Registro local da inscrição</li>
+                  <li>Mensagem de confirmação imediata</li>
+                  <li>Atualização do painel de inscrições</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="form-card">
+              <form id="registrationForm" novalidate>
+                <div class="form-row">
+                  <label for="nome">Nome completo</label>
+                  <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required />
+                  <small class="error-message"></small>
+                </div>
+
+                <div class="form-row">
+                  <label for="email">E-mail</label>
+                  <input type="email" id="email" name="email" placeholder="exemplo@email.com" required />
+                  <small class="error-message"></small>
+                </div>
+
+                <div class="form-row two-columns">
+                  <div>
+                    <label for="idade">Idade</label>
+                    <input type="number" id="idade" name="idade" min="12" max="29" placeholder="Ex.: 16" required />
+                    <small class="error-message"></small>
+                  </div>
+
+                  <div>
+                    <label for="oficina">Oficina de interesse</label>
+                    <select id="oficina" name="oficina" required>
+                      <option value="">Selecione</option>
+                    </select>
+                    <small class="error-message"></small>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <label for="mensagem">Mensagem (opcional)</label>
+                  <textarea id="mensagem" name="mensagem" rows="4" placeholder="Conte brevemente por que deseja participar"></textarea>
+                </div>
+
+                <div class="form-row checkbox-row">
+                  <input type="checkbox" id="termos" name="termos" required />
+                  <label for="termos">Declaro que li e concordo com os objetivos de participação do projeto.</label>
+                </div>
+                <small class="error-message checkbox-error"></small>
+
+                <button type="submit" class="button button-primary button-block">Enviar inscrição</button>
+                <p id="formFeedback" class="form-feedback" role="status" aria-live="polite"></p>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section muted-section" id="painel-inscricoes">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Painel do MVP</span>
+            <h2>Inscrições registradas localmente</h2>
+          </div>
+          <div class="section-side">
+            <p class="section-intro">Visualização simples das inscrições salvas no navegador para demonstração acadêmica do MVP.</p>
+            <div class="collapse-actions align-end">
+              <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+              <button type="button" class="collapse-toggle" data-target="painelContent" aria-expanded="true">− Minimizar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="painelContent">
+          <div class="panel-card">
+            <div class="panel-actions">
+              <span class="panel-counter" id="panelCounter">0 inscrições registradas</span>
+              <button type="button" class="button button-secondary small" id="clearRegistrations">Limpar registros</button>
+            </div>
+
+            <div id="registrationsList" class="registrations-list"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contato">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Contato</span>
+            <h2>Fale com o projeto</h2>
+          </div>
+          <div class="collapse-actions">
+            <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+            <button type="button" class="collapse-toggle" data-target="contatoContent" aria-expanded="true">− Minimizar</button>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="contatoContent">
+          <div class="contact-grid">
+            <div class="contact-card">
+              <p>Informações de contato para dúvidas, apoio e articulação comunitária.</p>
+
+              <ul class="contact-list">
+                <li><strong>E-mail:</strong> contato@conectajovemtech.com</li>
+                <li><strong>Telefone:</strong> (48) 99999-2026</li>
+                <li><strong>Local:</strong> São José/SC — comunidade escolar e ações locais</li>
+              </ul>
+            </div>
+
+            <div class="contact-card accent-card">
+              <h3>Resumo do MVP</h3>
+              <ul class="check-list compact light">
+                <li>One-page responsiva</li>
+                <li>Trilhas e cronograma</li>
+                <li>Formulário funcional</li>
+                <li>Persistência local</li>
+              </ul>
+              <button type="button" class="button button-light" id="backToTopBtn">Voltar ao topo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <div>
+        <img src="assets/img/logo-footer.svg" alt="Conecta Jovem Tech" class="footer-logo" />
+        <p>MVP acadêmico desenvolvido para a disciplina com foco em inclusão digital e oficinas introdutórias.</p>
+      </div>
+      <div class="footer-meta">
+        <span>São José • Santa Catarina</span>
+        <span>Projeto demonstrativo da Etapa 1</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>

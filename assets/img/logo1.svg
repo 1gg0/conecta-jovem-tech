@@ -1,0 +1,8 @@
+<svg width="252" height="72" viewBox="0 0 252 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="8" width="56" height="56" rx="20" fill="#E7F8FB"/>
+  <path d="M38.5 22C29.94 22 23 28.94 23 37.5C23 46.06 29.94 53 38.5 53H40.8V45.8H38.5C33.92 45.8 30.2 42.08 30.2 37.5C30.2 32.92 33.92 29.2 38.5 29.2H44.3V22H38.5Z" fill="#0F9FB5"/>
+  <path d="M34.5 40.1H50.3V47.2H34.5V40.1Z" fill="#0B6F8E"/>
+  <path d="M44.7 49.8L49.8 54.9L54.9 49.8" stroke="#FF8A4D" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="68" y="33" fill="#163142" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">Conecta</text>
+  <text x="68" y="55" fill="#0B6F8E" font-family="Inter, Arial, sans-serif" font-size="19" font-weight="800">Jovem Tech</text>
+</svg>
