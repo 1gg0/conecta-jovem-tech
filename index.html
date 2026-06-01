@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Conecta Jovem Tech - plataforma acadêmica para divulgação de oficinas introdutórias de programação e inclusão digital." />
+  <meta name="theme-color" content="#0f9fb5" />
   <title>Conecta Jovem Tech</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +13,7 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
   <header class="site-header" id="topo">
     <div class="container header-content">
       <a href="#topo" class="brand" aria-label="Conecta Jovem Tech">
@@ -27,6 +29,7 @@
       <nav class="main-nav" id="menu-principal">
         <a href="#inicio">Início</a>
         <a href="#sobre">Sobre</a>
+        <a href="#evolucao">Evolução HoW X</a>
         <a href="#beneficios">Diferenciais</a>
         <a href="#oficinas">Oficinas</a>
         <a href="#cronograma">Cronograma</a>
@@ -38,7 +41,14 @@
     </div>
   </header>
 
-  <main>
+  <div class="section-control-bar" aria-label="Controle de visualização das seções">
+    <div class="container section-control-content">
+      <span>Controle das seções do MVP</span>
+      <button type="button" class="button button-secondary global-collapse-toggle" id="toggleAllSections" aria-label="Minimizar todas as seções">− Minimizar tudo</button>
+    </div>
+  </div>
+
+  <main id="conteudo-principal">
     <section class="hero section" id="inicio">
       <div class="container hero-grid">
         <div class="hero-text">
@@ -46,7 +56,7 @@
           <h1>Oficinas introdutórias de tecnologia para jovens de São José/SC</h1>
           <p>
             O Conecta Jovem Tech reúne trilhas de programação, cronograma, inscrição e contato em um
-            ambiente acessível, organizado e funcional para a Etapa 1 do MVP acadêmico.
+            ambiente acessível, organizado e funcional para a Etapa 1 da HoW X, evoluindo o MVP acadêmico já validado na HoW IX.
           </p>
 
           <div class="hero-actions">
@@ -71,7 +81,7 @@
         </div>
 
         <div class="hero-visual">
-          <div class="hero-badge badge-top">MVP acadêmico funcional</div>
+          <div class="hero-badge badge-top">MVP acadêmico HoW X</div>
           <img src="assets/img/hero-illustration.svg" alt="Painel visual da plataforma Conecta Jovem Tech" />
           <div class="hero-badge badge-bottom">HTML + CSS + JavaScript</div>
         </div>
@@ -119,7 +129,52 @@
       </div>
     </section>
 
-    <section class="section muted-section" id="beneficios">
+    <section class="section muted-section" id="evolucao">
+      <div class="container">
+        <div class="section-heading with-toggle">
+          <div>
+            <span class="section-tag">Evolução HoW X</span>
+            <h2>Melhorias aplicadas ao MVP</h2>
+          </div>
+          <div class="section-side">
+            <p class="section-intro">
+              Esta versão concentra ajustes de responsividade, acessibilidade, segurança no tratamento dos dados locais e organização visual para apresentação acadêmica.
+            </p>
+            <div class="collapse-actions align-end">
+              <span class="collapse-hint">Você pode minimizar ou maximizar esta seção.</span>
+              <button type="button" class="collapse-toggle" data-target="evolucaoContent" aria-expanded="true">− Minimizar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse-content is-open" id="evolucaoContent">
+          <div class="updates-grid">
+            <article class="info-card update-card">
+              <div class="icon icon-gradient">📱</div>
+              <h3>Responsividade refinada</h3>
+              <p>Quebras de layout, espaçamentos e componentes foram ajustados para melhor leitura em desktop, tablet e celular.</p>
+            </article>
+            <article class="info-card update-card">
+              <div class="icon icon-gradient">♿</div>
+              <h3>Acessibilidade básica</h3>
+              <p>Foram incluídos atalho de navegação, foco visível, estados de menu mais claros e melhorias para navegação por teclado.</p>
+            </article>
+            <article class="info-card update-card">
+              <div class="icon icon-gradient">🔎</div>
+              <h3>Busca de oficinas</h3>
+              <p>A listagem de oficinas recebeu busca textual e filtro por categoria, facilitando a localização de trilhas específicas.</p>
+            </article>
+            <article class="info-card update-card">
+              <div class="icon icon-gradient">🛡️</div>
+              <h3>Dados locais mais seguros</h3>
+              <p>O painel de inscrições passou a tratar os textos informados pelo usuário antes de exibi-los na página.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="beneficios">
       <div class="container">
         <div class="section-heading with-toggle center-mobile">
           <div>
@@ -176,6 +231,17 @@
         </div>
 
         <div class="collapse-content is-open" id="oficinasContent">
+          <div class="workshop-toolbar" aria-label="Filtros da listagem de oficinas">
+            <label class="visually-hidden" for="workshopSearch">Buscar oficina</label>
+            <input type="search" id="workshopSearch" placeholder="Buscar por oficina, categoria ou local" autocomplete="off" />
+
+            <label class="visually-hidden" for="workshopCategoryFilter">Filtrar por categoria</label>
+            <select id="workshopCategoryFilter">
+              <option value="todas">Todas as categorias</option>
+            </select>
+
+            <span id="workshopResultCount" class="result-count" aria-live="polite"></span>
+          </div>
           <div class="workshops-grid" id="workshopsGrid"></div>
         </div>
       </div>
@@ -259,20 +325,20 @@
               <form id="registrationForm" novalidate>
                 <div class="form-row">
                   <label for="nome">Nome completo</label>
-                  <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" required />
+                  <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo" autocomplete="name" required />
                   <small class="error-message"></small>
                 </div>
 
                 <div class="form-row">
                   <label for="email">E-mail</label>
-                  <input type="email" id="email" name="email" placeholder="exemplo@email.com" required />
+                  <input type="email" id="email" name="email" placeholder="exemplo@email.com" autocomplete="email" required />
                   <small class="error-message"></small>
                 </div>
 
                 <div class="form-row two-columns">
                   <div>
                     <label for="idade">Idade</label>
-                    <input type="number" id="idade" name="idade" min="12" max="29" placeholder="Ex.: 16" required />
+                    <input type="number" id="idade" name="idade" min="12" max="29" inputmode="numeric" placeholder="Ex.: 16" required />
                     <small class="error-message"></small>
                   </div>
 
@@ -325,7 +391,10 @@
           <div class="panel-card">
             <div class="panel-actions">
               <span class="panel-counter" id="panelCounter">0 inscrições registradas</span>
-              <button type="button" class="button button-secondary small" id="clearRegistrations">Limpar registros</button>
+              <div class="panel-action-buttons">
+                <button type="button" class="button button-secondary small" id="exportRegistrations">Exportar CSV</button>
+                <button type="button" class="button button-secondary small" id="clearRegistrations">Limpar registros</button>
+              </div>
             </div>
 
             <div id="registrationsList" class="registrations-list"></div>
@@ -379,11 +448,11 @@
     <div class="container footer-content">
       <div>
         <img src="assets/img/logo-footer.svg" alt="Conecta Jovem Tech" class="footer-logo" />
-        <p>MVP acadêmico desenvolvido para a disciplina com foco em inclusão digital e oficinas introdutórias.</p>
+        <p>MVP acadêmico desenvolvido para a HoW X, com foco em inclusão digital e oficinas introdutórias.</p>
       </div>
       <div class="footer-meta">
         <span>São José • Santa Catarina</span>
-        <span>Projeto demonstrativo da Etapa 1</span>
+        <span>Projeto demonstrativo da Etapa 1 • HoW X</span>
       </div>
     </div>
   </footer>
