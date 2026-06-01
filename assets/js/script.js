@@ -236,17 +236,23 @@ const workshops = [
   }
 ];
 
+
 const workshopsGrid = document.getElementById('workshopsGrid');
 const scheduleList = document.getElementById('scheduleList');
 const scheduleTabs = document.getElementById('scheduleTabs');
 const workshopSelect = document.getElementById('oficina');
+const workshopSearch = document.getElementById('workshopSearch');
+const workshopCategoryFilter = document.getElementById('workshopCategoryFilter');
+const workshopResultCount = document.getElementById('workshopResultCount');
 const registrationForm = document.getElementById('registrationForm');
 const formFeedback = document.getElementById('formFeedback');
 const registrationsList = document.getElementById('registrationsList');
 const panelCounter = document.getElementById('panelCounter');
 const clearRegistrationsButton = document.getElementById('clearRegistrations');
+const exportRegistrationsButton = document.getElementById('exportRegistrations');
 const menuToggle = document.querySelector('.menu-toggle');
 const mainNav = document.querySelector('.main-nav');
+const navLinks = document.querySelectorAll('.main-nav a[href^="#"]');
 const backToTopBtn = document.getElementById('backToTopBtn');
 const heroWorkshopsCount = document.getElementById('heroWorkshopsCount');
 const heroVacanciesCount = document.getElementById('heroVacanciesCount');
@@ -258,36 +264,94 @@ const summaryNextTime = document.getElementById('summaryNextTime');
 const summaryWorkload = document.getElementById('summaryWorkload');
 const summaryVacancies = document.getElementById('summaryVacancies');
 
+const STORAGE_KEY = 'conectaJovemTechRegistrations';
+const SECTION_STATE_KEY = 'conectaJovemTechSectionState';
 let activeCategory = 'Programação';
 
+function escapeHTML(value = '') {
+  return String(value).replace(/[&<>'"]/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;'
+  }[char]));
+}
+
+function normalizeText(value = '') {
+  return String(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
 function renderHeroStats() {
+  if (!heroWorkshopsCount || !heroVacanciesCount) return;
   heroWorkshopsCount.textContent = String(workshops.length);
   heroVacanciesCount.textContent = String(workshops.reduce((total, item) => total + item.vacancies, 0));
 }
 
+function getFilteredWorkshops() {
+  const searchTerm = normalizeText(workshopSearch?.value || '');
+  const selectedCategory = workshopCategoryFilter?.value || 'todas';
+
+  return workshops.filter((workshop) => {
+    const matchesCategory = selectedCategory === 'todas' || workshop.category === selectedCategory;
+    const searchableText = normalizeText(`${workshop.title} ${workshop.category} ${workshop.description} ${workshop.place} ${workshop.level}`);
+    const matchesSearch = !searchTerm || searchableText.includes(searchTerm);
+    return matchesCategory && matchesSearch;
+  });
+}
+
+function renderWorkshopResultCount(total) {
+  if (!workshopResultCount) return;
+  workshopResultCount.textContent = `${total} oficina${total === 1 ? '' : 's'} encontrada${total === 1 ? '' : 's'}`;
+}
+
 function renderWorkshops() {
-  workshopsGrid.innerHTML = workshops.map((workshop) => {
+  if (!workshopsGrid) return;
+  const filteredWorkshops = getFilteredWorkshops();
+  renderWorkshopResultCount(filteredWorkshops.length);
+
+  if (!filteredWorkshops.length) {
+    workshopsGrid.innerHTML = '<p class="workshop-empty">Nenhuma oficina encontrada para os filtros selecionados.</p>';
+    return;
+  }
+
+  workshopsGrid.innerHTML = filteredWorkshops.map((workshop) => {
     const meta = categoryMeta[workshop.category];
     return `
       <article class="workshop-card ${meta.colorClass}">
-        <span class="pill ${meta.colorClass}">${workshop.category}</span>
-        <h3>${workshop.title}</h3>
-        <p>${workshop.description}</p>
+        <span class="pill ${meta.colorClass}">${escapeHTML(workshop.category)}</span>
+        <h3>${escapeHTML(workshop.title)}</h3>
+        <p>${escapeHTML(workshop.description)}</p>
         <div class="workshop-meta">
-          <span>${workshop.level}</span>
-          <span>${workshop.duration}</span>
-          <span>${workshop.modality}</span>
-          <span>${workshop.place}</span>
+          <span>${escapeHTML(workshop.level)}</span>
+          <span>${escapeHTML(workshop.duration)}</span>
+          <span>${escapeHTML(workshop.modality)}</span>
+          <span>${escapeHTML(workshop.place)}</span>
         </div>
       </article>
     `;
   }).join('');
 }
 
+function populateWorkshopCategoryFilter() {
+  if (!workshopCategoryFilter) return;
+  Object.keys(categoryMeta).forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    workshopCategoryFilter.appendChild(option);
+  });
+}
+
 function renderScheduleTabs() {
+  if (!scheduleTabs) return;
   const categories = Object.keys(categoryMeta);
   scheduleTabs.innerHTML = categories.map((category) => `
-    <button class="tab ${category === activeCategory ? 'active' : ''}" data-category="${category}">${category}</button>
+    <button class="tab ${category === activeCategory ? 'active' : ''}" data-category="${escapeHTML(category)}" aria-pressed="${category === activeCategory}">${escapeHTML(category)}</button>
   `).join('');
 
   scheduleTabs.querySelectorAll('.tab').forEach((button) => {
@@ -300,6 +364,7 @@ function renderScheduleTabs() {
 }
 
 function renderScheduleSummary(items) {
+  if (!summaryCategory || !summaryCount || !summaryNextDate || !summaryNextTime || !summaryWorkload || !summaryVacancies) return;
   const meta = categoryMeta[activeCategory];
   const nextItem = items[0];
   summaryCategory.textContent = activeCategory;
@@ -311,6 +376,7 @@ function renderScheduleSummary(items) {
 }
 
 function renderSchedule() {
+  if (!scheduleList) return;
   const items = workshops.filter((workshop) => workshop.category === activeCategory);
   renderScheduleSummary(items);
 
@@ -319,34 +385,32 @@ function renderSchedule() {
     return `
       <article class="schedule-item ${meta.colorClass}">
         <div class="schedule-date-wrap">
-          <span class="schedule-category-badge ${meta.colorClass}">${item.category}</span>
-          <div class="schedule-date">${item.date}</div>
+          <span class="schedule-category-badge ${meta.colorClass}">${escapeHTML(item.category)}</span>
+          <div class="schedule-date">${escapeHTML(item.date)}</div>
         </div>
         <div class="schedule-content">
-          <h3>${item.title}</h3>
-          <p>${item.description}</p>
+          <h3>${escapeHTML(item.title)}</h3>
+          <p>${escapeHTML(item.description)}</p>
           <div class="schedule-meta">
-            <span>${item.level}</span>
-            <span>${item.duration}</span>
-            <span>${item.time}</span>
-            <span>${item.place}</span>
+            <span>${escapeHTML(item.level)}</span>
+            <span>${escapeHTML(item.duration)}</span>
+            <span>${escapeHTML(item.time)}</span>
+            <span>${escapeHTML(item.place)}</span>
             <span>${item.vacancies} vagas</span>
           </div>
         </div>
-        <button type="button" class="button button-primary small schedule-enroll" data-workshop-id="${item.id}">Inscreva-se</button>
+        <button type="button" class="button button-primary small schedule-enroll" data-workshop-id="${escapeHTML(item.id)}">Inscreva-se</button>
       </article>
     `;
   }).join('');
 
   scheduleList.querySelectorAll('.schedule-enroll').forEach((button) => {
-    button.addEventListener('click', () => {
-      const workshopId = button.dataset.workshopId;
-      selectWorkshopAndScroll(workshopId);
-    });
+    button.addEventListener('click', () => selectWorkshopAndScroll(button.dataset.workshopId));
   });
 }
 
 function populateWorkshopSelect() {
+  if (!workshopSelect) return;
   const categories = Object.keys(categoryMeta);
   workshopSelect.innerHTML = '<option value="">Selecione</option>';
 
@@ -372,16 +436,40 @@ function getWorkshopById(id) {
 }
 
 function getRegistrations() {
-  return JSON.parse(localStorage.getItem('conectaJovemTechRegistrations') || '[]');
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch (error) {
+    console.warn('Não foi possível ler as inscrições locais.', error);
+    return [];
+  }
 }
 
 function saveRegistrations(registrations) {
-  localStorage.setItem('conectaJovemTechRegistrations', JSON.stringify(registrations));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(registrations));
+}
+
+function formatDateTime(isoDate) {
+  if (!isoDate) return 'Data não registrada';
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(isoDate));
+}
+
+function updateExportButtonState(registrations) {
+  if (!exportRegistrationsButton) return;
+  exportRegistrationsButton.disabled = registrations.length === 0;
+  exportRegistrationsButton.title = registrations.length ? 'Exportar inscrições em CSV' : 'Nenhuma inscrição para exportar';
 }
 
 function renderRegistrations() {
+  if (!registrationsList || !panelCounter) return;
   const registrations = getRegistrations();
   panelCounter.textContent = `${registrations.length} inscrição${registrations.length === 1 ? '' : 'ões'} registrada${registrations.length === 1 ? '' : 's'}`;
+  updateExportButtonState(registrations);
 
   if (!registrations.length) {
     registrationsList.innerHTML = '<p class="panel-empty">Nenhuma inscrição registrada ainda. Preencha o formulário para testar o MVP.</p>';
@@ -390,12 +478,13 @@ function renderRegistrations() {
 
   registrationsList.innerHTML = registrations.map((registration) => `
     <article class="registration-item">
-      <h3>${registration.nome}</h3>
-      <p><strong>Oficina:</strong> ${registration.oficinaTitulo}</p>
-      <p><strong>Categoria:</strong> ${registration.categoria}</p>
-      <p><strong>E-mail:</strong> ${registration.email}</p>
-      <p><strong>Idade:</strong> ${registration.idade} anos</p>
-      ${registration.mensagem ? `<p><strong>Mensagem:</strong> ${registration.mensagem}</p>` : ''}
+      <h3>${escapeHTML(registration.nome)}</h3>
+      <time datetime="${escapeHTML(registration.createdAt || '')}">Registrado em ${escapeHTML(formatDateTime(registration.createdAt))}</time>
+      <p><strong>Oficina:</strong> ${escapeHTML(registration.oficinaTitulo)}</p>
+      <p><strong>Categoria:</strong> ${escapeHTML(registration.categoria)}</p>
+      <p><strong>E-mail:</strong> ${escapeHTML(registration.email)}</p>
+      <p><strong>Idade:</strong> ${escapeHTML(registration.idade)} anos</p>
+      ${registration.mensagem ? `<p><strong>Mensagem:</strong> ${escapeHTML(registration.mensagem)}</p>` : ''}
     </article>
   `).join('');
 }
@@ -415,22 +504,20 @@ function validateField(input) {
   }
 
   let message = '';
+  const value = input.value.trim();
 
-  if (!input.value.trim()) {
+  if (!value) {
     message = 'Este campo é obrigatório.';
-  } else if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim())) {
+  } else if (input.type === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
     message = 'Informe um e-mail válido.';
   } else if (input.id === 'idade') {
-    const age = Number(input.value);
-    if (Number.isNaN(age) || age < 12 || age > 29) {
-      message = 'Informe uma idade entre 12 e 29 anos.';
+    const age = Number(value);
+    if (!Number.isInteger(age) || age < 12 || age > 29) {
+      message = 'Informe uma idade inteira entre 12 e 29 anos.';
     }
   }
 
-  if (errorMessage) {
-    errorMessage.textContent = message;
-  }
-
+  if (errorMessage) errorMessage.textContent = message;
   return !message;
 }
 
@@ -438,25 +525,84 @@ function clearValidationMessages() {
   document.querySelectorAll('.error-message').forEach((message) => {
     message.textContent = '';
   });
-  formFeedback.textContent = '';
-  formFeedback.className = 'form-feedback';
+  if (formFeedback) {
+    formFeedback.textContent = '';
+    formFeedback.className = 'form-feedback';
+  }
+}
+
+function getSavedSectionState() {
+  try {
+    return JSON.parse(localStorage.getItem(SECTION_STATE_KEY) || '{}');
+  } catch (error) {
+    return {};
+  }
+}
+
+function persistSectionState(savedState) {
+  localStorage.setItem(SECTION_STATE_KEY, JSON.stringify(savedState));
+}
+
+function updateGlobalSectionToggle() {
+  const globalToggle = document.getElementById('toggleAllSections');
+  const sectionButtons = Array.from(document.querySelectorAll('.collapse-toggle[data-target]'));
+  if (!globalToggle || sectionButtons.length === 0) return;
+
+  const allExpanded = sectionButtons.every((button) => button.getAttribute('aria-expanded') === 'true');
+  const shouldCollapse = allExpanded;
+
+  globalToggle.dataset.action = shouldCollapse ? 'collapse' : 'expand';
+  globalToggle.textContent = shouldCollapse ? '− Minimizar tudo' : '+ Maximizar tudo';
+  globalToggle.setAttribute(
+    'aria-label',
+    shouldCollapse ? 'Minimizar todas as seções' : 'Maximizar todas as seções'
+  );
+}
+
+function setSectionState(button, content, isExpanded, savedState, shouldPersist = true) {
+  const section = content.closest('.section');
+
+  button.setAttribute('aria-expanded', String(isExpanded));
+  button.textContent = isExpanded ? '− Minimizar' : '+ Maximizar';
+  content.classList.toggle('is-open', isExpanded);
+  content.classList.toggle('is-collapsed', !isExpanded);
+  content.setAttribute('aria-hidden', String(!isExpanded));
+
+  if (section) {
+    section.classList.toggle('is-section-collapsed', !isExpanded);
+  }
+
+  savedState[content.id] = isExpanded;
+  if (shouldPersist) persistSectionState(savedState);
+  updateGlobalSectionToggle();
+}
+
+function expandSectionByContentId(contentId) {
+  const content = document.getElementById(contentId);
+  const button = document.querySelector(`.collapse-toggle[data-target="${contentId}"]`);
+  if (!content || !button) return;
+
+  const savedState = getSavedSectionState();
+  setSectionState(button, content, true, savedState);
 }
 
 function selectWorkshopAndScroll(workshopId) {
   const workshop = getWorkshopById(workshopId);
-  if (!workshop) return;
+  if (!workshop || !workshopSelect) return;
 
+  expandSectionByContentId('inscricaoContent');
   workshopSelect.value = workshop.id;
   document.getElementById('inscricao').scrollIntoView({ behavior: 'smooth', block: 'start' });
   setTimeout(() => workshopSelect.focus(), 350);
 }
 
-registrationForm.addEventListener('submit', (event) => {
+function handleRegistrationSubmit(event) {
   event.preventDefault();
   clearValidationMessages();
 
   const requiredFields = Array.from(registrationForm.querySelectorAll('input[required], select[required]'));
-  const isValid = requiredFields.every(validateField);
+  const validationResults = requiredFields.map(validateField);
+  const isValid = validationResults.every(Boolean);
 
   if (!isValid) {
     formFeedback.textContent = 'Revise os campos destacados para concluir a inscrição.';
@@ -465,18 +611,33 @@ registrationForm.addEventListener('submit', (event) => {
   }
 
   const workshop = getWorkshopById(workshopSelect.value);
+  if (!workshop) {
+    formFeedback.textContent = 'Selecione uma oficina válida para continuar.';
+    formFeedback.classList.add('error');
+    return;
+  }
+
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const registrations = getRegistrations();
+  const alreadyRegistered = registrations.some((item) => item.email.toLowerCase() === email && item.oficinaId === workshop.id);
+
+  if (alreadyRegistered) {
+    formFeedback.textContent = 'Este e-mail já possui inscrição local registrada para a oficina selecionada.';
+    formFeedback.classList.add('error');
+    return;
+  }
 
   const registration = {
     nome: document.getElementById('nome').value.trim(),
-    email: document.getElementById('email').value.trim(),
+    email,
     idade: document.getElementById('idade').value.trim(),
     oficinaId: workshop.id,
     oficinaTitulo: workshop.title,
     categoria: workshop.category,
-    mensagem: document.getElementById('mensagem').value.trim()
+    mensagem: document.getElementById('mensagem').value.trim(),
+    createdAt: new Date().toISOString()
   };
 
-  const registrations = getRegistrations();
   registrations.unshift(registration);
   saveRegistrations(registrations);
   renderRegistrations();
@@ -484,64 +645,195 @@ registrationForm.addEventListener('submit', (event) => {
   registrationForm.reset();
   formFeedback.textContent = 'Inscrição enviada com sucesso no MVP demonstrativo.';
   formFeedback.classList.add('success');
-});
+}
 
-registrationForm.querySelectorAll('input[required], select[required]').forEach((input) => {
-  input.addEventListener('blur', () => validateField(input));
-});
+function exportRegistrationsAsCSV() {
+  const registrations = getRegistrations();
+  if (!registrations.length) return;
 
-clearRegistrationsButton.addEventListener('click', () => {
-  localStorage.removeItem('conectaJovemTechRegistrations');
-  renderRegistrations();
-});
+  const headers = ['Nome', 'E-mail', 'Idade', 'Oficina', 'Categoria', 'Mensagem', 'Data de registro'];
+  const rows = registrations.map((item) => [
+    item.nome,
+    item.email,
+    item.idade,
+    item.oficinaTitulo,
+    item.categoria,
+    item.mensagem || '',
+    formatDateTime(item.createdAt)
+  ]);
 
-menuToggle.addEventListener('click', () => {
-  const isOpen = mainNav.classList.toggle('open');
-  menuToggle.setAttribute('aria-expanded', String(isOpen));
-});
+  const csvContent = [headers, ...rows]
+    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(';'))
+    .join('\n');
 
-mainNav.querySelectorAll('a').forEach((link) => {
-  link.addEventListener('click', () => {
-    mainNav.classList.remove('open');
-    menuToggle.setAttribute('aria-expanded', 'false');
-  });
-});
+  const blob = new Blob([`\ufeff${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'inscricoes-conecta-jovem-tech.csv';
+  link.click();
+  URL.revokeObjectURL(url);
+}
 
-backToTopBtn.addEventListener('click', () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-function initializeSectionToggles() {
-  const savedState = JSON.parse(localStorage.getItem('conectaJovemTechSectionState') || '{}');
-
-  document.querySelectorAll('.collapse-toggle').forEach((button) => {
-    const targetId = button.dataset.target;
-    const content = document.getElementById(targetId);
-    const sectionKey = targetId;
-
-    const setState = (isExpanded) => {
-      button.setAttribute('aria-expanded', String(isExpanded));
-      button.textContent = isExpanded ? '− Minimizar' : '+ Maximizar';
-      content.classList.toggle('is-open', isExpanded);
-      content.classList.toggle('is-collapsed', !isExpanded);
-      savedState[sectionKey] = isExpanded;
-      localStorage.setItem('conectaJovemTechSectionState', JSON.stringify(savedState));
-    };
-
-    const initialState = savedState[sectionKey] !== undefined ? savedState[sectionKey] : true;
-    setState(initialState);
-
-    button.addEventListener('click', () => {
-      const isExpanded = button.getAttribute('aria-expanded') === 'true';
-      setState(!isExpanded);
+function initializeForm() {
+  if (!registrationForm) return;
+  registrationForm.addEventListener('submit', handleRegistrationSubmit);
+  registrationForm.querySelectorAll('input[required], select[required]').forEach((input) => {
+    input.addEventListener('blur', () => validateField(input));
+    input.addEventListener('input', () => {
+      if (input.value || input.checked) validateField(input);
     });
   });
 }
 
-renderHeroStats();
-renderWorkshops();
-renderScheduleTabs();
-renderSchedule();
-populateWorkshopSelect();
-renderRegistrations();
-initializeSectionToggles();
+function initializePanelActions() {
+  if (clearRegistrationsButton) {
+    clearRegistrationsButton.addEventListener('click', () => {
+      const registrations = getRegistrations();
+      if (!registrations.length) return;
+      const confirmClear = window.confirm('Deseja realmente limpar as inscrições registradas neste navegador?');
+      if (!confirmClear) return;
+      localStorage.removeItem(STORAGE_KEY);
+      renderRegistrations();
+    });
+  }
+
+  if (exportRegistrationsButton) {
+    exportRegistrationsButton.addEventListener('click', exportRegistrationsAsCSV);
+  }
+}
+
+function initializeMobileMenu() {
+  if (!menuToggle || !mainNav) return;
+
+  const closeMenu = () => {
+    mainNav.classList.remove('open');
+    menuToggle.classList.remove('is-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', 'Abrir menu');
+  };
+
+  menuToggle.addEventListener('click', () => {
+    const isOpen = mainNav.classList.toggle('open');
+    menuToggle.classList.toggle('is-open', isOpen);
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+    menuToggle.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+  });
+
+  mainNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeMenu();
+  });
+
+  document.addEventListener('click', (event) => {
+    const clickedInsideMenu = mainNav.contains(event.target) || menuToggle.contains(event.target);
+    if (!clickedInsideMenu) closeMenu();
+  });
+}
+
+function initializeBackToTop() {
+  if (!backToTopBtn) return;
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+function initializeWorkshopFilters() {
+  populateWorkshopCategoryFilter();
+  workshopSearch?.addEventListener('input', renderWorkshops);
+  workshopCategoryFilter?.addEventListener('change', renderWorkshops);
+}
+
+function initializeSectionToggles() {
+  const savedState = getSavedSectionState();
+  const sectionButtons = Array.from(document.querySelectorAll('.collapse-toggle[data-target]'));
+  const globalToggle = document.getElementById('toggleAllSections');
+
+  sectionButtons.forEach((button) => {
+    const targetId = button.dataset.target;
+    const content = document.getElementById(targetId);
+    if (!content) return;
+
+    const initialState = savedState[targetId] !== undefined ? savedState[targetId] : true;
+    setSectionState(button, content, initialState, savedState, false);
+
+    button.addEventListener('click', () => {
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      setSectionState(button, content, !isExpanded, savedState);
+    });
+  });
+
+  persistSectionState(savedState);
+  updateGlobalSectionToggle();
+
+  globalToggle?.addEventListener('click', () => {
+    const shouldExpand = globalToggle.dataset.action !== 'collapse';
+    sectionButtons.forEach((button) => {
+      const content = document.getElementById(button.dataset.target);
+      if (!content) return;
+      setSectionState(button, content, shouldExpand, savedState, false);
+    });
+    persistSectionState(savedState);
+    updateGlobalSectionToggle();
+  });
+}
+
+function initializeActiveNavigation() {
+  if (!navLinks.length || !('IntersectionObserver' in window)) return;
+
+  const sections = Array.from(navLinks)
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean);
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const activeId = `#${entry.target.id}`;
+      navLinks.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === activeId));
+    });
+  }, { rootMargin: '-35% 0px -55% 0px', threshold: 0.01 });
+
+  sections.forEach((section) => observer.observe(section));
+}
+
+function initializeRevealAnimations() {
+  const elements = document.querySelectorAll('.info-card, .workshop-card, .schedule-item, .form-card, .panel-card, .contact-card, .two-column-card, .hero-visual, .hero-text');
+
+  if (!('IntersectionObserver' in window)) {
+    elements.forEach((element) => element.classList.add('reveal-visible'));
+    return;
+  }
+
+  elements.forEach((element) => element.classList.add('reveal-on-scroll'));
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  elements.forEach((element) => observer.observe(element));
+}
+
+function initializeApp() {
+  renderHeroStats();
+  initializeWorkshopFilters();
+  renderWorkshops();
+  renderScheduleTabs();
+  renderSchedule();
+  populateWorkshopSelect();
+  renderRegistrations();
+  initializeForm();
+  initializePanelActions();
+  initializeMobileMenu();
+  initializeBackToTop();
+  initializeSectionToggles();
+  initializeActiveNavigation();
+  initializeRevealAnimations();
+}
+
+initializeApp();
